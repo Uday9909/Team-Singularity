@@ -1,27 +1,23 @@
-import { StatusDot } from '../ui'
+
+
+import { SpillHudOverlay } from './SpillHudOverlay'
 
 /**
- * Hero section — text overlay only.
+ * Hero section — Ops terminal aesthetic.
  *
- * The globe/map is handled by `GlobeMapView` (fixed behind everything).
- * This component renders the hero text inside a 300vh scroll-driver wrapper
- * with a 100vh sticky inner.  `scrollProgress` (0→1, fed by App) controls
- * fade-out of the text and the atmosphere vignette.
+ * Left-aligned typography, HUD framing elements (brackets, crosshairs),
+ * functional buttons, and an interactive Three.js globe with spill markers.
  */
-export function HeroSection({ scrollProgress = 0, onRunDetection }) {
-  // Hero text fades out in the first ~33% of scroll progress
-  const contentOpacity = Math.max(0, 1 - scrollProgress * 3)
-  const contentY = scrollProgress * -60
-
-  // Scroll-down caret disappears almost immediately
-  const scrollIndicatorOpacity = Math.max(0, 1 - scrollProgress * 8)
+export function HeroSection({ scrollProgress = 0, onRunDetection, activeSpill, onHudClose }) {
+  // Fade out over scroll
+  const contentOpacity = Math.max(0, 1 - scrollProgress * 1.5)
+  const contentY = scrollProgress * -80
 
   const scrollToDashboard = () => {
     document.getElementById('dashboard-section')?.scrollIntoView({ behavior: 'smooth' })
   }
 
   return (
-    /* 300vh wrapper → 200vh of scroll distance for the globe zoom */
     <div style={{ height: '300vh', position: 'relative', zIndex: 1 }}>
       <section
         id="hero-section"
@@ -31,175 +27,181 @@ export function HeroSection({ scrollProgress = 0, onRunDetection }) {
           height: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          paddingTop: '44px',
-          /* transparent — the fixed GlobeMapView shows through */
+          padding: '40px',
+          pointerEvents: 'none',
         }}
       >
-        {/* ── Atmosphere vignette — dark frame around globe, fades on zoom ── */}
+
+
+        {/* ── HUD Framing Overlay (Fades on scroll) ── */}
         <div
           aria-hidden="true"
           style={{
             position: 'absolute',
             inset: 0,
-            background:
-              'radial-gradient(ellipse 60% 60% at 50% 50%, transparent 0%, rgba(11,15,10,0.25) 55%, rgba(11,15,10,0.82) 80%, #0B0F0A 100%)',
             pointerEvents: 'none',
-            opacity: Math.max(0, 1 - scrollProgress * 1.8),
-            transition: 'opacity 0.05s linear',
+            opacity: contentOpacity,
+            transition: 'opacity 0.1s linear',
+            zIndex: 5,
           }}
-        />
+        >
+          {/* Scanline overlay (right side bleed) */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(57,255,106,0.03) 2px, rgba(57,255,106,0.03) 4px)',
+              maskImage: 'linear-gradient(to right, transparent 30%, black 100%)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent 30%, black 100%)',
+            }}
+          />
 
-        {/* ── Hero content ── */}
+          {/* Corner brackets */}
+          <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0 }}>
+            <path d="M 40 60 L 40 40 L 60 40" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
+            <path d="M calc(100% - 40px) 60 L calc(100% - 40px) 40 L calc(100% - 60px) 40" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
+            <path d="M 40 calc(100% - 60px) L 40 calc(100% - 40px) L 60 calc(100% - 40px)" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
+            <path d="M calc(100% - 40px) calc(100% - 60px) L calc(100% - 40px) calc(100% - 40px) L calc(100% - 60px) calc(100% - 40px)" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
+
+            {/* Crosshair/reticle (shifted right for globe focal point) */}
+            <circle cx="70%" cy="50%" r="120" fill="none" stroke="var(--phosphor)" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4 6" />
+            <circle cx="70%" cy="50%" r="40" fill="none" stroke="var(--phosphor)" strokeWidth="1" strokeOpacity="0.2" />
+            <line x1="70%" y1="calc(50% - 50px)" x2="70%" y2="calc(50% - 8px)" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
+            <line x1="70%" y1="calc(50% + 8px)" x2="70%" y2="calc(50% + 50px)" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
+            <line x1="calc(70% - 50px)" y1="50%" x2="calc(70% - 8px)" y2="50%" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
+            <line x1="calc(70% + 8px)" y1="50%" x2="calc(70% + 50px)" y2="50%" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
+
+            {/* Edge tick marks (bottom left scale) */}
+            <g stroke="var(--phosphor)" strokeOpacity="0.3" strokeWidth="1">
+              {[...Array(20)].map((_, i) => (
+                <line key={i} x1="40" y1={Math.max(40, window.innerHeight - 80 - (i * 15))} x2={i % 5 === 0 ? "55" : "48"} y2={Math.max(40, window.innerHeight - 80 - (i * 15))} />
+              ))}
+            </g>
+          </svg>
+        </div>
+
+        {/* ── Left-aligned Hero content ── */}
         <div
-          className="relative flex flex-col items-center text-center gap-7 px-6"
+          className="relative flex flex-col items-start gap-8 px-4 sm:px-12 md:px-24"
           style={{
             zIndex: 10,
-            maxWidth: '700px',
+            maxWidth: '900px',
             opacity: contentOpacity,
             transform: `translateY(${contentY}px)`,
             willChange: 'opacity, transform',
-            pointerEvents: contentOpacity > 0.1 ? 'auto' : 'none',
+            pointerEvents: 'none',
           }}
         >
-          {/* Eyebrow chip */}
-          <div
-            className="flex items-center gap-2.5 px-4 py-1.5 rounded-full"
-            style={{
-              background: 'rgba(57,255,106,0.07)',
-              border: '1px solid rgba(57,255,106,0.2)',
-              backdropFilter: 'blur(8px)',
-            }}
-          >
-            <StatusDot live size={6} />
-            <span
-              className="font-mono text-xs tracking-widest uppercase"
-              style={{ color: 'var(--phosphor)', opacity: 0.85, letterSpacing: '0.18em' }}
-            >
-              SAR · AIS · Live — SIH26143
-            </span>
-          </div>
-
-          {/* Main headline */}
-          <h1
-            className="font-display font-bold"
-            style={{
-              fontSize: 'clamp(3.5rem, 12vw, 8rem)',
-              lineHeight: 0.92,
-              letterSpacing: '-0.03em',
-              color: 'var(--bone)',
-            }}
-          >
-            TRITON
-            <br />
-            <span
+          {/* Wordmark */}
+          <div className="flex flex-col">
+            <h1
+              className="font-bold"
               style={{
-                color: 'var(--phosphor)',
-                textShadow:
-                  '0 0 40px rgba(57,255,106,0.5), 0 0 100px rgba(57,255,106,0.2)',
+                fontFamily: 'var(--font-tech)',
+                fontSize: 'clamp(3.5rem, 8vw, 6rem)',
+                lineHeight: 1,
+                letterSpacing: '0.1em', // wide tracking
+                color: 'var(--bone)',
+                textShadow: '0 0 40px rgba(255,255,255,0.1)',
+                marginLeft: '-0.05em', // optical alignment
               }}
             >
-              WATCH
-            </span>
-          </h1>
+              TRITON
+              <br />
+              <span
+                style={{
+                  color: 'var(--phosphor)',
+                  textShadow: '0 0 20px rgba(57,255,106,0.4)',
+                }}
+              >
+                WATCH
+              </span>
+            </h1>
+          </div>
 
-          {/* Subtitle */}
+          {/* System description (shortened, left aligned) */}
           <p
-            className="font-sans"
             style={{
+              fontFamily: 'var(--font-body)',
               color: 'var(--bone)',
-              opacity: 0.6,
-              fontSize: '1.1rem',
-              lineHeight: 1.65,
-              maxWidth: '440px',
+              opacity: 0.7,
+              fontSize: '1rem',
+              lineHeight: 1.6,
+              maxWidth: '380px',
+              borderLeft: '2px solid rgba(57,255,106,0.3)',
+              paddingLeft: '16px',
             }}
           >
-            SAR satellite oil-spill detection correlated with live AIS vessel tracking.
-            Identify the polluter in under 3 seconds.
+            SAR × AIS correlation engine.<br />
+            Positive polluter ID &lt; 3s.
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex items-center gap-8 mt-4" style={{ pointerEvents: contentOpacity > 0.1 ? 'auto' : 'none' }}>
             <button
               id="btn-run-detection"
               onClick={() => {
                 onRunDetection?.()
                 scrollToDashboard()
               }}
-              className="flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg font-display font-semibold text-sm transition-all duration-200"
+              className="group flex items-center justify-center gap-3 px-6 py-3 transition-all duration-200"
               style={{
-                background: 'var(--phosphor)',
-                color: 'var(--void)',
-                boxShadow: 'var(--glow-blue)',
-                border: 'none',
+                background: 'rgba(57,255,106,0.1)',
+                border: '1px solid var(--phosphor)',
+                color: 'var(--phosphor)',
                 cursor: 'pointer',
-                minWidth: '210px',
-                letterSpacing: '0.01em',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                letterSpacing: '0.1em',
+                clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%)',
+                boxShadow: 'inset 0 0 20px rgba(57,255,106,0)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = 'var(--glow-blue-lg)'
-                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.background = 'rgba(57,255,106,0.2)'
+                e.currentTarget.style.boxShadow = 'inset 0 0 20px rgba(57,255,106,0.1)'
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = 'var(--glow-blue)'
-                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.background = 'rgba(57,255,106,0.1)'
+                e.currentTarget.style.boxShadow = 'inset 0 0 20px rgba(57,255,106,0)'
               }}
             >
-              ▶&ensp;Run Live Detection
+              <span className="w-1.5 h-1.5 bg-phosphor rounded-full animate-[status-blink_1.5s_ease-in-out_infinite]" style={{ boxShadow: 'var(--glow-green)' }} />
+              [ RUN LIVE DETECTION ]
             </button>
 
             <button
               id="btn-view-architecture"
               onClick={scrollToDashboard}
-              className="flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg font-display font-semibold text-sm transition-all duration-200"
+              className="flex items-center gap-2 transition-all duration-200"
               style={{
-                background: 'rgba(232,240,228,0.05)',
+                background: 'none',
+                border: 'none',
                 color: 'var(--bone)',
-                border: '1px solid rgba(232,240,228,0.15)',
                 cursor: 'pointer',
-                minWidth: '210px',
-                backdropFilter: 'blur(8px)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem',
+                opacity: 0.6,
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(232,240,228,0.4)'
-                e.currentTarget.style.background = 'rgba(232,240,228,0.09)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(232,240,228,0.15)'
-                e.currentTarget.style.background = 'rgba(232,240,228,0.05)'
-              }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
             >
-              View Dashboard ↓
+              view dashboard &rarr;
             </button>
           </div>
         </div>
 
-        {/* ── Scroll indicator ── */}
-        <div
-          className="absolute bottom-8 left-1/2 flex flex-col items-center gap-2"
-          style={{
-            transform: 'translateX(-50%)',
-            opacity: scrollIndicatorOpacity,
-            transition: 'opacity 0.1s',
-          }}
-        >
-          <span
-            className="font-mono text-xs tracking-widest"
-            style={{ color: 'var(--bone)', opacity: 0.28 }}
-          >
-            SCROLL
-          </span>
-          <svg width="14" height="18" viewBox="0 0 14 18" fill="none" style={{ opacity: 0.28 }}>
-            <path
-              d="M7 1v12M1 8l6 6 6-6"
-              stroke="var(--phosphor)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
+        {/* ── Spill HUD Overlay (appears on marker hover/select) ── */}
+        {activeSpill && (
+          <SpillHudOverlay
+            spill={activeSpill}
+            onClose={onHudClose}
+          />
+        )}
       </section>
     </div>
   )

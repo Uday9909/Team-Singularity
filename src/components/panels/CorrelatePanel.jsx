@@ -74,7 +74,7 @@ function VesselCard({ vessel, rank, isSelected, onClick, scoreRef }) {
   )
 }
 
-export function CorrelatePanel({ selectedVesselId, onVesselSelect }) {
+export function CorrelatePanel({ selectedVesselId, onVesselSelect, hasDetectionData }) {
   const [selected, setSelected] = useState(INITIAL_VESSELS[0].id)
   const scoreRef = useRef(null)
   const prevScore = useRef(null)
@@ -98,7 +98,7 @@ export function CorrelatePanel({ selectedVesselId, onVesselSelect }) {
   const [detailOpen, setDetailOpen] = useState(false)
 
   return (
-    <div className="glass-panel flex flex-col" style={{ padding: '32px', gap: '24px', height: '100%' }}>
+    <div className="glass-panel flex flex-col relative overflow-hidden" style={{ padding: '32px', gap: '24px', height: '100%' }}>
 
       {/* Header */}
       <div className="flex flex-col gap-1">
@@ -110,8 +110,17 @@ export function CorrelatePanel({ selectedVesselId, onVesselSelect }) {
 
       <div className="section-divider" />
 
-      {/* Vessel cards */}
-      <div className="flex flex-col gap-2">
+      {!hasDetectionData ? (
+        <div className="flex flex-col items-center justify-center text-center gap-3 h-full" style={{ padding: '40px 20px' }}>
+          <span style={{ fontSize: '24px', opacity: 0.2 }}>⚓</span>
+          <span className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: 0.4, lineHeight: 1.6 }}>
+            Awaiting SAR detection data<br />to correlate vessel proximity.
+          </span>
+        </div>
+      ) : (
+        <>
+          {/* Vessel cards */}
+          <div className="flex flex-col gap-2">
         {INITIAL_VESSELS.map((v, i) => (
           <VesselCard
             key={v.id}
@@ -154,6 +163,8 @@ export function CorrelatePanel({ selectedVesselId, onVesselSelect }) {
             </div>
           )}
         </div>
+      )}
+        </>
       )}
     </div>
   )

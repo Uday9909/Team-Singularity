@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { INITIAL_VESSELS } from '../../data/demo'
 import { jsPDF } from 'jspdf'
 
-export function ReportPanel({ selectedVesselId }) {
+export function ReportPanel({ selectedVesselId, hasDetectionData }) {
   const [generating, setGenerating] = useState(false)
   const [lastReport, setLastReport] = useState(null)
   const [msg, setMsg] = useState(null)
@@ -80,7 +80,7 @@ export function ReportPanel({ selectedVesselId }) {
   ]
 
   return (
-    <div className="glass-panel flex flex-col" style={{ padding: '32px', gap: '24px', height: '100%' }}>
+    <div className="glass-panel flex flex-col relative overflow-hidden" style={{ padding: '32px', gap: '24px', height: '100%' }}>
 
       {/* Header */}
       <div className="flex flex-col gap-1">
@@ -92,8 +92,17 @@ export function ReportPanel({ selectedVesselId }) {
 
       <div className="section-divider" />
 
-      {/* Suspect summary */}
-      <div style={{ padding: '20px', background: 'rgba(255,176,0,0.07)', border: '1px solid rgba(255,176,0,0.2)', borderRadius: '12px' }}>
+      {!hasDetectionData ? (
+        <div className="flex flex-col items-center justify-center text-center gap-3 h-full" style={{ padding: '40px 20px' }}>
+          <span style={{ fontSize: '24px', opacity: 0.2 }}>📄</span>
+          <span className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: 0.4, lineHeight: 1.6 }}>
+            Awaiting detection & correlation<br />to generate MRCC report.
+          </span>
+        </div>
+      ) : (
+        <>
+          {/* Suspect summary */}
+          <div style={{ padding: '20px', background: 'rgba(255,176,0,0.07)', border: '1px solid rgba(255,176,0,0.2)', borderRadius: '12px' }}>
         <div className="font-mono text-xs" style={{ color: 'var(--amber)', opacity: 0.7, marginBottom: '8px' }}>TOP SUSPECT</div>
         <div className="font-display font-bold" style={{ fontSize: '1.1rem', color: 'var(--amber)', marginBottom: '4px' }}>
           {vessel.name}
@@ -170,6 +179,8 @@ export function ReportPanel({ selectedVesselId }) {
           </div>
         ))}
       </div>
+        </>
+      )}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 
-export function DetectPanel() {
+export function DetectPanel({ onDetectionComplete }) {
   const [isDragging, setIsDragging] = useState(false)
   const [image, setImage] = useState(null)
   const [scanning, setScanning] = useState(false)
@@ -22,7 +22,8 @@ export function DetectPanel() {
     if (el) el.style.opacity = '0'
     setScanning(false)
     setDone(true)
-  }, [])
+    if (onDetectionComplete) onDetectionComplete()
+  }, [onDetectionComplete])
 
   const handleFile = useCallback((file) => {
     if (!file?.type.match(/image\//)) return
