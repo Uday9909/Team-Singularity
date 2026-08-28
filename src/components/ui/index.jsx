@@ -57,3 +57,4 @@ export function SectionLabel({ children, className = '' }) {
     </p>
   )
 }
+export { LivingCircuit } from './LivingCircuit';

@@ -196,8 +196,8 @@ export default function App() {
                   onVesselSelect={setSelectedVesselId}
                   hasDetectionData={hasDetectionData}
                 />
-                <ReportPanel 
-                  selectedVesselId={selectedVesselId} 
+                <ReportPanel
+                  selectedVesselId={selectedVesselId}
                   hasDetectionData={hasDetectionData}
                 />
               </div>
@@ -205,63 +205,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* ── Architecture section ──────────────────────────────────────── */}
-        <section
-          id="architecture-section"
-          style={{
-            position: 'relative',
-            zIndex: 1,
-            padding: 'clamp(60px, 6vw, 80px) clamp(20px, 4vw, 60px)',
-            borderTop: '1px solid var(--hairline)',
-            background: 'var(--void)',
-          }}
-        >
-          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '40px' }}>
-            <div className="flex items-center gap-4">
-              <span className="font-mono text-xs tracking-widest uppercase" style={{ color: 'var(--phosphor)', opacity: 0.5 }}>
-                System Architecture
-              </span>
-              <div style={{ flex: 1, height: 1, background: 'var(--hairline)' }} />
-            </div>
-
-            <div className="grid gap-4 theme-panel-neutral" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-              {[
-                { n: '01', title: 'SAR Ingestion', desc: 'Sentinel-1 GRD via Copernicus API · 10 m · IW mode · ascending pass', icon: '🛰' },
-                { n: '02', title: 'Oil Detection', desc: 'YOLOv8-seg fine-tuned on SOS dataset · IoU 0.847 · 91% confidence', icon: '⬡' },
-                { n: '03', title: 'AIS Correlation', desc: 'Proximity + temporal window + speed/heading + AIS blackout scoring', icon: '⚓' },
-                { n: '04', title: 'Alert & Report', desc: 'Ranked suspects → jsPDF report → MRCC alert dispatch pipeline', icon: '⚑' },
-              ].map(card => (
-                <div key={card.n} className="glass-panel" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-xs" style={{ color: 'var(--phosphor)', opacity: 0.45 }}>{card.n}</span>
-                    <span style={{ fontSize: '1.3rem' }}>{card.icon}</span>
-                  </div>
-                  <div>
-                    <h3 className="font-display font-semibold text-base" style={{ color: 'var(--phosphor)', marginBottom: '8px' }}>
-                      {card.title}
-                    </h3>
-                    <p className="font-sans text-sm" style={{ color: 'var(--bone)', opacity: 0.55, lineHeight: 1.6 }}>
-                      {card.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Tech stack */}
-            <div
-              className="flex flex-wrap gap-2 items-center"
-              style={{ padding: '20px 24px', background: 'rgba(57,255,106,0.03)', borderRadius: '12px', border: '1px solid var(--hairline)' }}
-            >
-              <span className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: 0.3 }}>Stack:</span>
-              {['React 19', 'Vite 8', 'Tailwind CSS v4', 'MapLibre GL JS', 'anime.js v4', 'YOLOv8', 'Sentinel-1', 'jsPDF'].map(t => (
-                <span key={t} className="font-mono text-xs px-2.5 py-1 rounded-lg" style={{ background: 'rgba(57,255,106,0.07)', color: 'var(--phosphor)', border: '1px solid rgba(57,255,106,0.15)' }}>
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
 
         <div style={{ pointerEvents: 'auto' }}>
           <Footer />

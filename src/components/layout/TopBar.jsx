@@ -1,9 +1,17 @@
 import { StatusDot } from '../ui'
 import { DEMO_SECTOR } from '../../data/demo'
+import { Link, useLocation } from 'react-router-dom'
 
 export function TopBar() {
   const now = new Date()
   const utcStr = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC'
+  const location = useLocation()
+
+  const navItems = [
+    { name: 'Architecture', path: '/' },
+    { name: 'Dashboard', path: '/landing' },
+    { name: 'Stack', path: '/stack' },
+  ]
 
   return (
     <header
@@ -31,20 +39,33 @@ export function TopBar() {
         >
           TRITON WATCH
         </span>
-        <span
-          className="font-mono text-xs hidden sm:inline"
-          style={{ color: 'var(--bone)', opacity: 0.4 }}
-        >
-          / SIH26143
-        </span>
       </div>
 
-      {/* Center: sector */}
-      <div
-        className="font-mono text-xs tracking-widest hidden md:block"
-        style={{ color: 'var(--bone)', opacity: 0.5 }}
-      >
-        {DEMO_SECTOR}
+      {/* Center: Navigation */}
+      <div className="hidden md:flex items-center gap-8 font-mono text-xs tracking-widest">
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.path
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              style={{
+                color: isActive ? 'var(--phosphor)' : 'var(--bone)',
+                opacity: isActive ? 1 : 0.5,
+                textDecoration: 'none',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) e.target.style.opacity = 0.8
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) e.target.style.opacity = 0.5
+              }}
+            >
+              {item.name}
+            </Link>
+          )
+        })}
       </div>
 
       {/* Right: live status + timestamp */}
