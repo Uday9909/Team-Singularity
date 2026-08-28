@@ -1,16 +1,49 @@
-# React + Vite
+# SIH26143 — Oil Spill Detection + AIS Vessel Tracking
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Automated oil spill detection from SAR satellite imagery, correlated with AIS vessel tracking data to identify the likely source vessel.
 
-Currently, two official plugins are available:
+## Team
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Role | Owner | Owns |
+|---|---|---|
+| SAR Data Engineer | Vaibhav | Downloading and cleaning the satellite image dataset |
+| ML Model Training | Anant | Training the segmentation model that detects spills |
+| AIS Data Engineer | Anany | Live vessel tracking data (AISstream.io) |
+| Backend | Uday | FastAPI — connects model, AIS data, and correlation logic |
+| Frontend | Dhruv | React + Mapbox dashboard |
+| Integration & PPT | Vaibhavi | Wiring everything together, checklist/roadmap ownership, demo, slides — has visibility into all parts |
 
-## React Compiler
+## System Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```
+SAR images → U-Net model → detected spill (lat/lon)
+                                    │
+AIS vessel tracks ─────────────────┤
+                                    ▼
+                         Correlation engine
+                                    │
+                                    ▼
+                    FastAPI backend → React/Mapbox dashboard
+```
 
-## Expanding the Oxlint configuration
+## Branch Workflow
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- `main` is protected — no direct pushes.
+- Each person works on their own feature branch (e.g. `sar-data`, `ml-model`, `ais-data`, `backend`, `frontend`, `integration`).
+- Open a PR into `main` when a piece is working. Vaibhavi reviews for integration fit.
+
+## Timeline
+
+| Days | Phase |
+|---|---|
+| 1–3 | Foundation — dataset downloaded, AIS connection live, repo structured |
+| 4–7 | Core build — model trains, API skeleton up, static UI |
+| 8–10 | Integration — real data flowing end-to-end |
+| 11–13 | Polish — correlation tuning, UI cleanup, PDF report |
+| 14–15 | Demo prep — rehearsal, backup video, slides finalized |
+
+Full role breakdown, deliverables, and risk list: see `PROJECT_PLAN.md`.
+
+## Daily Standup
+
+Same time every day. 2 minutes per person: what's done, what's blocked, what's next.
