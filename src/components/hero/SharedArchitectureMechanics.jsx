@@ -62,7 +62,7 @@ export const ScanSweepLine = ({ activeStageIdx, totalStages = 5 }) => {
   );
 };
 
-export function getOverlayStyle(leftPercent, edgeFade) {
+function getOverlayStyle(leftPercent, edgeFade) {
   return {
     position: 'fixed',
     top: 0,
@@ -130,12 +130,9 @@ export const StageHUD = ({ stageProgress, stagesConfig, persistentStages = [] })
 
   return (
     <div
+      className="fixed z-10 w-[90%] max-w-[420px] left-4 sm:left-10"
       style={{
-        position: 'fixed',
         top: '60px',
-        left: '40px',
-        zIndex: 10,
-        maxWidth: '420px',
         opacity: textOpacity,
         transform: `translateY(${textY}px)`,
         pointerEvents: 'none',
@@ -220,12 +217,11 @@ export const StageHUD = ({ stageProgress, stagesConfig, persistentStages = [] })
 
 export const ArchFooterTicker = ({ labels, activeIndex }) => (
   <div
+    className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 px-4 sm:px-6 py-2"
     style={{
       position: 'fixed',
       bottom: 0, left: 0, right: 0,
       zIndex: 15,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      gap: '24px', padding: '10px 24px',
       background: 'rgba(5,8,5,0.92)',
       backdropFilter: 'blur(16px)',
       borderTop: '1px solid rgba(57,255,136,0.08)',

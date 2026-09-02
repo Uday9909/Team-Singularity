@@ -31,7 +31,7 @@ export function ReportPanel({ selectedVesselId, hasDetectionData }) {
       // Spill section
       doc.setFontSize(10); doc.setTextColor(255, 176, 0); doc.text('DETECTED SPILL', 15, 60)
       doc.setDrawColor(255, 176, 0); doc.line(15, 62, 75, 62)
-      const spillRows = [['ID','ALPHA-7'],['Confidence','91.0%'],['IoU','0.847'],['Area','~247 km²'],['Centre','27.4°N, 89.1°W'],['SAR Scene','S1A_IW_GRDH_20260824']]
+      const spillRows = [['ID', 'ALPHA-7'], ['Confidence', '91.0%'], ['IoU', '0.847'], ['Area', '~247 km²'], ['Centre', '27.4°N, 89.1°W'], ['SAR Scene', 'S1A_IW_GRDH_20260824']]
       doc.setFontSize(8)
       spillRows.forEach(([k, v], i) => {
         doc.setTextColor(57, 255, 106); doc.text(k, 15, 70 + i * 7)
@@ -103,82 +103,82 @@ export function ReportPanel({ selectedVesselId, hasDetectionData }) {
         <>
           {/* Suspect summary */}
           <div style={{ padding: '20px', background: 'rgba(255,176,0,0.07)', border: '1px solid rgba(255,176,0,0.2)', borderRadius: '12px' }}>
-        <div className="font-mono text-xs" style={{ color: 'var(--amber)', opacity: 0.7, marginBottom: '8px' }}>TOP SUSPECT</div>
-        <div className="font-display font-bold" style={{ fontSize: '1.1rem', color: 'var(--amber)', marginBottom: '4px' }}>
-          {vessel.name}
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: 0.5 }}>IMO {vessel.imo}</span>
-          <span className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: 0.5 }}>{vessel.flag} · {vessel.type}</span>
-          <span className="font-display font-bold" style={{ color: 'var(--amber)', marginLeft: 'auto' }}>{vessel.score}<span style={{ fontSize: '0.6em', opacity: 0.6 }}>/100</span></span>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex flex-col gap-3">
-        <button
-          id="btn-export-pdf"
-          onClick={handlePDF}
-          disabled={generating}
-          className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-display font-semibold text-sm transition-all duration-200"
-          style={{
-            background: generating ? 'rgba(57,255,106,0.1)' : 'var(--phosphor)',
-            color: generating ? 'var(--phosphor)' : 'var(--void)',
-            border: generating ? '1px solid rgba(57,255,106,0.3)' : 'none',
-            cursor: generating ? 'wait' : 'pointer',
-            boxShadow: generating ? 'none' : 'var(--glow-green)',
-          }}
-          onMouseEnter={e => { if (!generating) e.currentTarget.style.boxShadow = 'var(--glow-green-lg)' }}
-          onMouseLeave={e => { if (!generating) e.currentTarget.style.boxShadow = 'var(--glow-green)' }}
-        >
-          {generating ? <><span style={{ animation: 'status-blink 0.5s infinite' }}>⬡</span> Generating…</> : <>↓ Export PDF Report</>}
-        </button>
-
-        <button id="btn-snapshot" onClick={() => flash('Dashboard snapshot saved')}
-          className="w-full py-3 rounded-xl font-display font-medium text-sm transition-all"
-          style={{ background: 'rgba(255,255,255,0.04)', color: 'var(--bone)', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', opacity: 0.75 }}
-          onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)' }}
-          onMouseLeave={e => { e.currentTarget.style.opacity = '0.75'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
-        >
-          ◻ Save Snapshot
-        </button>
-
-        <button id="btn-mrcc" onClick={() => flash('Alert queued for MRCC dispatch')}
-          className="w-full py-3 rounded-xl font-display font-medium text-sm transition-all"
-          style={{ background: 'rgba(255,255,255,0.03)', color: 'var(--bone)', border: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer', opacity: 0.55 }}
-          onMouseEnter={e => { e.currentTarget.style.opacity = '0.9' }}
-          onMouseLeave={e => { e.currentTarget.style.opacity = '0.55' }}
-        >
-          ⇧ Dispatch to MRCC Portal
-        </button>
-      </div>
-
-      {msg && (
-        <div className="rounded-lg px-4 py-2.5 font-mono text-xs text-center" style={{ background: 'rgba(57,255,106,0.07)', color: 'var(--phosphor)', border: '1px solid rgba(57,255,106,0.2)' }}>
-          {msg}
-        </div>
-      )}
-
-      {lastReport && (
-        <div className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: 0.35 }}>
-          Last report: {lastReport.ts} UTC · {lastReport.vessel}
-        </div>
-      )}
-
-      {/* Pipeline */}
-      <div className="mt-auto flex flex-col gap-3">
-        <div className="section-divider" />
-        <span className="font-mono text-xs tracking-widest" style={{ color: 'var(--bone)', opacity: 0.3 }}>PIPELINE STATUS</span>
-        {PIPELINE.map(({ label, done }) => (
-          <div key={label} className="flex items-center gap-3">
-            <span style={{ color: done ? 'var(--phosphor)' : 'rgba(255,255,255,0.15)', fontSize: '11px', flexShrink: 0 }}>
-              {done ? '✓' : '○'}
-            </span>
-            <span className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: done ? 0.65 : 0.28 }}>{label}</span>
-            {done && <span className="ml-auto w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: 'var(--phosphor)', boxShadow: 'var(--glow-green)', animation: 'status-blink 2s infinite' }} />}
+            <div className="font-mono text-xs" style={{ color: 'var(--amber)', opacity: 0.7, marginBottom: '8px' }}>TOP SUSPECT</div>
+            <div className="font-display font-bold" style={{ fontSize: '1.1rem', color: 'var(--amber)', marginBottom: '4px' }}>
+              {vessel.name}
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: 0.5 }}>IMO {vessel.imo}</span>
+              <span className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: 0.5 }}>{vessel.flag} · {vessel.type}</span>
+              <span className="font-display font-bold" style={{ color: 'var(--amber)', marginLeft: 'auto' }}>{vessel.score}<span style={{ fontSize: '0.6em', opacity: 0.6 }}>/100</span></span>
+            </div>
           </div>
-        ))}
-      </div>
+
+          {/* Actions */}
+          <div className="flex flex-col gap-3">
+            <button
+              id="btn-export-pdf"
+              onClick={handlePDF}
+              disabled={generating}
+              className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-display font-semibold text-sm transition-all duration-200"
+              style={{
+                background: generating ? 'rgba(57,255,106,0.1)' : 'var(--phosphor)',
+                color: generating ? 'var(--phosphor)' : 'var(--void)',
+                border: generating ? '1px solid rgba(57,255,106,0.3)' : 'none',
+                cursor: generating ? 'wait' : 'pointer',
+                boxShadow: generating ? 'none' : 'var(--glow-green)',
+              }}
+              onMouseEnter={e => { if (!generating) e.currentTarget.style.boxShadow = 'var(--glow-green-lg)' }}
+              onMouseLeave={e => { if (!generating) e.currentTarget.style.boxShadow = 'var(--glow-green)' }}
+            >
+              {generating ? <><span style={{ animation: 'status-blink 0.5s infinite' }}>⬡</span> Generating…</> : <>↓ Export PDF Report</>}
+            </button>
+
+            <button id="btn-snapshot" onClick={() => flash('Dashboard snapshot saved')}
+              className="w-full py-3 rounded-xl font-display font-medium text-sm transition-all"
+              style={{ background: 'rgba(255,255,255,0.04)', color: 'var(--bone)', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', opacity: 0.75 }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)' }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '0.75'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
+            >
+              ◻ Save Snapshot
+            </button>
+
+            <button id="btn-mrcc" onClick={() => flash('Alert queued for MRCC dispatch')}
+              className="w-full py-3 rounded-xl font-display font-medium text-sm transition-all"
+              style={{ background: 'rgba(255,255,255,0.03)', color: 'var(--bone)', border: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer', opacity: 0.55 }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '0.9' }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '0.55' }}
+            >
+              ⇧ Dispatch to MRCC Portal
+            </button>
+          </div>
+
+          {msg && (
+            <div className="rounded-lg px-4 py-2.5 font-mono text-xs text-center" style={{ background: 'rgba(57,255,106,0.07)', color: 'var(--phosphor)', border: '1px solid rgba(57,255,106,0.2)' }}>
+              {msg}
+            </div>
+          )}
+
+          {lastReport && (
+            <div className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: 0.35 }}>
+              Last report: {lastReport.ts} UTC · {lastReport.vessel}
+            </div>
+          )}
+
+          {/* Pipeline */}
+          <div className="mt-auto flex flex-col gap-3">
+            <div className="section-divider" />
+            <span className="font-mono text-xs tracking-widest" style={{ color: 'var(--bone)', opacity: 0.3 }}>PIPELINE STATUS</span>
+            {PIPELINE.map(({ label, done }) => (
+              <div key={label} className="flex items-center gap-3">
+                <span style={{ color: done ? 'var(--phosphor)' : 'rgba(255,255,255,0.15)', fontSize: '11px', flexShrink: 0 }}>
+                  {done ? '✓' : '○'}
+                </span>
+                <span className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: done ? 0.65 : 0.28 }}>{label}</span>
+                {done && <span className="ml-auto w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: 'var(--phosphor)', boxShadow: 'var(--glow-green)', animation: 'status-blink 2s infinite' }} />}
+              </div>
+            ))}
+          </div>
         </>
       )}
     </div>

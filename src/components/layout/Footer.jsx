@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <footer
-      className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 gap-3"
+      className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-4 gap-4 sm:gap-3 text-center sm:text-left"
       style={{
         borderTop: '1px solid var(--hairline)',
         background: 'var(--void)',
@@ -18,7 +18,7 @@ export function Footer() {
         </span>
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6">
         <div className="flex items-center gap-2">
           <span
             className="font-mono text-xs"

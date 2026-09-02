@@ -438,12 +438,9 @@ export function SpillHudOverlay({ spill, onClose }) {
 
       {/* ── RIGHT PANEL: Static tab indicator ────────────────────────────── */}
       <div
-        className="hud-panel hud-panel-inner"
+        className="hud-panel hud-panel-inner hidden sm:flex flex-col flex-shrink-0"
         style={{
           width: '180px',
-          flexShrink: 0,
-          display: 'flex',
-          flexDirection: 'column',
         }}
       >
         <div className="hud-scanlines" aria-hidden="true" />

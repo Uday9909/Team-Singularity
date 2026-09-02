@@ -60,23 +60,33 @@ export function HeroSection({ scrollProgress = 0, onRunDetection, activeSpill, o
 
           {/* Corner brackets */}
           <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0 }}>
-            <path d="M 40 60 L 40 40 L 60 40" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
-            <path d="M calc(100% - 40px) 60 L calc(100% - 40px) 40 L calc(100% - 60px) 40" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
-            <path d="M 40 calc(100% - 60px) L 40 calc(100% - 40px) L 60 calc(100% - 40px)" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
-            <path d="M calc(100% - 40px) calc(100% - 60px) L calc(100% - 40px) calc(100% - 40px) L calc(100% - 60px) calc(100% - 40px)" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
+            <g transform="translate(40, 40)">
+              <path d="M 0 20 L 0 0 L 20 0" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
+            </g>
+            <g style={{ transform: 'translate(calc(100% - 40px), 40px)' }}>
+              <path d="M 0 20 L 0 0 L -20 0" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
+            </g>
+            <g style={{ transform: 'translate(40px, calc(100% - 40px))' }}>
+              <path d="M 0 -20 L 0 0 L 20 0" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
+            </g>
+            <g style={{ transform: 'translate(calc(100% - 40px), calc(100% - 40px))' }}>
+              <path d="M 0 -20 L 0 0 L -20 0" fill="none" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.5" />
+            </g>
 
             {/* Crosshair/reticle (shifted right for globe focal point) */}
-            <circle cx="70%" cy="50%" r="120" fill="none" stroke="var(--phosphor)" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4 6" />
-            <circle cx="70%" cy="50%" r="40" fill="none" stroke="var(--phosphor)" strokeWidth="1" strokeOpacity="0.2" />
-            <line x1="70%" y1="calc(50% - 50px)" x2="70%" y2="calc(50% - 8px)" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
-            <line x1="70%" y1="calc(50% + 8px)" x2="70%" y2="calc(50% + 50px)" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
-            <line x1="calc(70% - 50px)" y1="50%" x2="calc(70% - 8px)" y2="50%" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
-            <line x1="calc(70% + 8px)" y1="50%" x2="calc(70% + 50px)" y2="50%" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
+            <g style={{ transform: 'translate(70%, 50%)' }}>
+              <circle cx="0" cy="0" r="120" fill="none" stroke="var(--phosphor)" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4 6" />
+              <circle cx="0" cy="0" r="40" fill="none" stroke="var(--phosphor)" strokeWidth="1" strokeOpacity="0.2" />
+              <line x1="0" y1="-50" x2="0" y2="-8" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
+              <line x1="0" y1="8" x2="0" y2="50" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
+              <line x1="-50" y1="0" x2="-8" y2="0" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
+              <line x1="8" y1="0" x2="50" y2="0" stroke="var(--phosphor)" strokeWidth="1.5" strokeOpacity="0.6" />
+            </g>
 
             {/* Edge tick marks (bottom left scale) */}
-            <g stroke="var(--phosphor)" strokeOpacity="0.3" strokeWidth="1">
+            <g stroke="var(--phosphor)" strokeOpacity="0.3" strokeWidth="1" style={{ transform: 'translate(40px, calc(100% - 80px))' }}>
               {[...Array(20)].map((_, i) => (
-                <line key={i} x1="40" y1={Math.max(40, window.innerHeight - 80 - (i * 15))} x2={i % 5 === 0 ? "55" : "48"} y2={Math.max(40, window.innerHeight - 80 - (i * 15))} />
+                <line key={i} x1="0" y1={-i * 15} x2={i % 5 === 0 ? 15 : 8} y2={-i * 15} />
               ))}
             </g>
           </svg>

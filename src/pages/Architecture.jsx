@@ -1240,12 +1240,9 @@ const StageHUD = ({ stageProgress }) => {
 
   return (
     <div
+      className="fixed z-10 w-[90%] max-w-[420px] left-4 sm:left-10"
       style={{
-        position: 'fixed',
         top: '60px',
-        left: '40px',
-        zIndex: 10,
-        maxWidth: '420px',
         opacity: textOpacity,
         transform: `translateY(${textY}px)`,
         pointerEvents: 'none',
@@ -1349,12 +1346,13 @@ const Stage5ReportOverlay = ({ stageProgress }) => {
           textTransform: 'uppercase',
           letterSpacing: '0.1em',
           background: 'rgba(5, 8, 5, 0.65)',
-          padding: '40px',
+          padding: 'clamp(20px, 5vw, 40px)',
           borderRadius: '2px',
           backdropFilter: 'blur(8px)',
           border: '1px solid rgba(57, 255, 136, 0.3)',
           boxShadow: '0 0 40px rgba(57,255,136,0.05) inset, 0 0 20px rgba(0,0,0,0.8)',
-          minWidth: '420px',
+          width: '90%',
+          maxWidth: '420px',
           transform: `translateY(${5 - opacity * 5}px)`,
         }}
       >
@@ -1412,12 +1410,11 @@ const ALL_FEEDS = ['SAR FEED', 'AIS STREAM', 'SENTINEL-1 API'];
 
 const ArchFooterTicker = ({ activeFeeds }) => (
   <div
+    className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 px-4 sm:px-6 py-2"
     style={{
       position: 'fixed',
       bottom: 0, left: 0, right: 0,
       zIndex: 15,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      gap: '24px', padding: '10px 24px',
       background: 'rgba(5,8,5,0.92)',
       backdropFilter: 'blur(16px)',
       borderTop: '1px solid rgba(57,255,136,0.08)',

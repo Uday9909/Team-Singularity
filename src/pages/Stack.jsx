@@ -152,12 +152,12 @@ const EquationCallouts = ({ equations, stageProgress, stageIdx }) => {
   const isVisible = p > 0.05 && p < 0.95;
 
   return (
-    <div style={{
+    <div className="hidden md:block" style={{
       position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
       pointerEvents: 'none', zIndex: 12,
       opacity: isVisible ? 1 : 0, transition: 'opacity 0.3s'
     }}>
-      <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
+      <svg width="100%" height="100%" className="absolute top-0 left-0">
         {equations.map((eq, i) => {
           const revealP = getLabelRevealPercent(p, stageIdx);
           const seqReveal = Math.max(0, Math.min(1, (revealP - i*0.1) * 2));
@@ -180,9 +180,9 @@ const EquationCallouts = ({ equations, stageProgress, stageIdx }) => {
         return (
           <div
             key={i}
+            className="left-[5%] md:left-[68%] max-w-[90%] md:max-w-[350px]"
             style={{
               position: 'absolute',
-              left: '68%',
               top: `${20 + i * 15}%`,
               transform: `translateY(-50%) translateX(${20 * (1-seqReveal)}px)`,
               opacity: seqReveal,
@@ -191,7 +191,6 @@ const EquationCallouts = ({ equations, stageProgress, stageIdx }) => {
               background: 'rgba(5,8,5,0.85)',
               border: '1px solid rgba(57,255,136,0.2)',
               padding: '12px 16px',
-              maxWidth: '350px'
             }}
           >
             <div style={{ fontSize: '0.65rem', letterSpacing: '0.1em', opacity: 0.7, marginBottom: '6px' }}>

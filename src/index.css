@@ -162,6 +162,11 @@ body {
 /* Ensure non-rendered areas (space around globe) match the void colour */
 .maplibregl-map { background: var(--void) !important; }
 
+/* Enable native vertical touch scrolling over the map */
+.maplibregl-canvas, .maplibregl-canvas-container, .maplibregl-map {
+  touch-action: pan-y !important;
+}
+
 /* ============================================================
    SCORE BAR
    ============================================================ */
