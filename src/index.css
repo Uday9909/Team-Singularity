@@ -1,0 +1,380 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --void:     #0B0F0A;
+  --phosphor: #00A3FF;
+  --amber:    #FFB000;
+  --panel:    #0e151c;
+  --hairline: #1e262b;
+  --bone:     #E8F0E4;
+  --overlay:  rgba(11, 15, 10, 0.72);
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --font-tech:    'Orbitron', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-sans:    'IBM Plex Sans', system-ui, sans-serif;
+
+  --glow-blue:    0 0 10px rgba(0,163,255,0.75), 0 0 28px rgba(0,163,255,0.3);
+  --glow-blue-lg: 0 0 18px rgba(0,163,255,0.9), 0 0 56px rgba(0,163,255,0.35);
+  --glow-amber:    0 0 10px rgba(255,176,0,0.85), 0 0 28px rgba(255,176,0,0.35);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--void);
+  color: var(--bone);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+.font-display { font-family: var(--font-display); }
+.font-mono    { font-family: var(--font-mono); }
+.font-sans    { font-family: var(--font-sans); }
+
+.text-phosphor { color: var(--phosphor); }
+.text-amber    { color: var(--amber); }
+.text-bone     { color: var(--bone); }
+
+.text-glow-blue { text-shadow: 0 0 20px rgba(0,163,255,0.6), 0 0 60px rgba(0,163,255,0.25); }
+.text-glow-amber { text-shadow: 0 0 16px rgba(255,176,0,0.7), 0 0 40px rgba(255,176,0,0.3); }
+
+/* ============================================================
+   GLASS PANELS — spacious, breathable
+   ============================================================ */
+.glass-panel {
+  background: var(--panel-bg, rgba(11, 15, 20, 0.45));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--panel-border, rgba(255,255,255,0.06));
+  border-radius: 16px;
+}
+
+.glass-panel-bright {
+  background: rgba(14, 20, 28, 0.55);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0,163,255,0.15);
+  border-radius: 16px;
+}
+
+/* ── Two-tier panel theme overrides ────────────────────────── */
+/* Wrap a container in one of these classes so child .glass-panel
+   elements inherit the lighter tokens via CSS custom properties. */
+.theme-panel-neutral {
+  --panel-bg: rgba(14, 22, 30, 0.50);
+  --panel-border: rgba(0, 163, 255, 0.10);
+}
+.theme-panel-surface {
+  --panel-bg: rgba(20, 30, 42, 0.45);
+  --panel-border: rgba(255, 255, 255, 0.10);
+}
+
+/* Legacy alias so old components don't break */
+.glass-card { background: rgba(14,20,28,0.50); backdrop-filter: blur(16px); border: 1px solid var(--hairline); border-radius: 12px; }
+
+/* ============================================================
+   GLOWS & ACCENTS
+   ============================================================ */
+.glow-blue    { box-shadow: var(--glow-blue); }
+.glow-blue-lg { box-shadow: var(--glow-blue-lg); }
+.glow-amber    { box-shadow: var(--glow-amber); }
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar        { width: 5px; background: var(--void); }
+::-webkit-scrollbar-thumb  { background: #1e262b; border-radius: 3px; }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes status-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.15; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scan-sweep {
+  0%   { top: 0%;   opacity: 0.9; }
+  95%  { top: 100%; opacity: 0.6; }
+  100% { top: 100%; opacity: 0; }
+}
+@keyframes dashboard-scan {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateX(100vw); opacity: 0; }
+}
+
+.animate-status-blink { animation: status-blink 1.8s ease-in-out infinite; }
+.animate-fade-up      { animation: fade-up 0.7s ease-out forwards; }
+
+/* ============================================================
+   VESSEL MARKERS
+   ============================================================ */
+.vessel-marker {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--phosphor);
+  box-shadow: var(--glow-blue);
+  border: 1px solid rgba(0,163,255,0.5);
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.vessel-marker.suspect {
+  background: var(--amber);
+  box-shadow: var(--glow-amber);
+  border-color: rgba(255,176,0,0.6);
+}
+.vessel-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--bone);
+  margin-top: 3px;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.95);
+  pointer-events: none;
+}
+
+/* ============================================================
+   MAPLIBRE OVERRIDES
+   ============================================================ */
+.maplibregl-ctrl-bottom-left,
+.maplibregl-ctrl-bottom-right,
+.maplibregl-ctrl-top-right { display: none; }
+
+/* Ensure non-rendered areas (space around globe) match the void colour */
+.maplibregl-map { background: var(--void) !important; }
+
+/* Enable native vertical touch scrolling over the map */
+.maplibregl-canvas, .maplibregl-canvas-container, .maplibregl-map {
+  touch-action: pan-y !important;
+}
+
+/* ============================================================
+   SCORE BAR
+   ============================================================ */
+.score-bar-track { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+.score-bar-fill  { height: 100%; border-radius: 2px; transition: width 0.8s cubic-bezier(0.16,1,0.3,1); }
+
+/* ============================================================
+   DROP ZONE
+   ============================================================ */
+.drop-zone {
+  border: 1.5px dashed rgba(0,163,255,0.2);
+  border-radius: 12px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.drop-zone.active {
+  border-color: var(--phosphor);
+  background: rgba(0,163,255,0.04);
+}
+
+/* ============================================================
+   SECTION DIVIDER
+   ============================================================ */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,163,255,0.15), transparent);
+}
+
+/* ============================================================
+   DASHBOARD SCAN LINE
+   ============================================================ */
+.dashboard-scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--phosphor) 50%, transparent 100%);
+  box-shadow: 0 0 12px rgba(0,163,255,0.5);
+  animation: dashboard-scan 6s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   HUD TOKENS
+   ============================================================ */
+:root {
+  --magenta:    #FF2D6B;
+  --font-hud:   'Chakra Petch', 'Orbitron', system-ui, sans-serif;
+
+  --glow-green:    0 0 10px rgba(57,255,106,0.75), 0 0 28px rgba(57,255,106,0.3);
+  --glow-green-lg: 0 0 18px rgba(57,255,106,0.9), 0 0 56px rgba(57,255,106,0.35);
+  --glow-magenta:  0 0 10px rgba(255,45,107,0.7), 0 0 28px rgba(255,45,107,0.3);
+}
+
+/* ============================================================
+   HUD PANELS — Cyberpunk framed panels
+   ============================================================ */
+.hud-panel {
+  position: relative;
+  background: rgba(11, 15, 10, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 163, 255, 0.18);
+  overflow: hidden;
+}
+
+/* Corner brackets via pseudo-elements */
+.hud-panel::before,
+.hud-panel::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--phosphor);
+  border-style: solid;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.5;
+}
+.hud-panel::before {
+  top: 6px;
+  left: 6px;
+  border-width: 1.5px 0 0 1.5px;
+}
+.hud-panel::after {
+  top: 6px;
+  right: 6px;
+  border-width: 1.5px 1.5px 0 0;
+}
+
+/* Bottom corners via inner element */
+.hud-panel-inner::before,
+.hud-panel-inner::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--phosphor);
+  border-style: solid;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.5;
+}
+.hud-panel-inner::before {
+  bottom: 6px;
+  left: 6px;
+  border-width: 0 0 1.5px 1.5px;
+}
+.hud-panel-inner::after {
+  bottom: 6px;
+  right: 6px;
+  border-width: 0 1.5px 1.5px 0;
+}
+
+/* Scanline texture inside HUD panels */
+.hud-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 163, 255, 0.015) 2px,
+    rgba(0, 163, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* HUD custom scrollbar */
+.hud-scroll::-webkit-scrollbar { width: 3px; }
+.hud-scroll::-webkit-scrollbar-track { background: transparent; }
+.hud-scroll::-webkit-scrollbar-thumb { background: rgba(0,163,255,0.25); border-radius: 2px; }
+.hud-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0,163,255,0.45); }
+
+/* HUD divider */
+.hud-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,163,255,0.2), transparent);
+}
+
+/* HUD field row */
+.hud-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 6px 0;
+}
+.hud-field-key {
+  font-family: var(--font-hud);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bone);
+  opacity: 0.4;
+}
+.hud-field-val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--bone);
+  opacity: 0.85;
+}
+
+/* ============================================================
+   HUD ANIMATIONS
+   ============================================================ */
+@keyframes hud-slide-in {
+  from { transform: translateX(60px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes hud-slide-out {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(60px); opacity: 0; }
+}
+@keyframes hud-field-in {
+  from { transform: translateY(14px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+@keyframes marker-pulse {
+  0%, 100% { transform: scale(1);   opacity: 0.9; }
+  50%      { transform: scale(1.4); opacity: 0.5; }
+}
+@keyframes marker-ring {
+  0%   { transform: scale(0.8); opacity: 0.7; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Three.js globe container */
+.three-globe-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: auto;
+}
+.three-globe-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+

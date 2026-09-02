@@ -44,6 +44,19 @@ AIS vessel tracks ─────────────────┤
 
 Full role breakdown, deliverables, and risk list: see `PROJECT_PLAN.md`.
 
+## Recent Updates & Optimizations (Frontend)
+
+We recently completed a major overhaul of the **React + Mapbox dashboard** to improve the mobile user experience (UX) and eliminate console errors, reinforcing the high-tech, tactical HUD aesthetic:
+
+*   **Mobile UX & Responsiveness:**
+    *   **Core Layout Overhauls:** Implemented flexible, responsive wrappers across `App.jsx`, `Architecture.jsx`, and `Footer.jsx` to gracefully wrap columns and scale font sizes on narrow screens.
+    *   **Top Bar & Navigation:** Rebuilt the top navigation bar for small screens. Implemented a sleek, animated Hamburger menu with a glassmorphism dropdown (`rgba(0,0,0,0.85)` + blur). Ensured dynamic resizing to prevent horizontal overflow on narrow viewports.
+    *   **Native Touch Scroll:** Resolved a major issue where `MapLibre GL` was intercepting vertical touch swipes. Overrode the default canvas behavior (`touch-action: pan-y !important`) to restore smooth native vertical scrolling on mobile phones while preserving horizontal map rotation.
+    *   **De-cluttered Mobile Views:** Hid complex, space-consuming SVG equation callouts on the Stack page (`Stack.jsx`) and non-essential side panels in the HUD (`SpillHudOverlay.jsx`) for mobile resolutions, allowing the 3D models and critical text to breathe.
+*   **Performance & Stability Fixes:**
+    *   **Vite HMR Fix:** Resolved Vite Fast Refresh warnings by isolating standard function exports from React component files (`SharedArchitectureMechanics.jsx`).
+    *   **SVG Rendering Errors:** Fixed React console errors in `HeroSection.jsx` caused by invalid CSS `calc()` operations inside SVG path attributes. Migrated these calculations to standard CSS transforms (`<g style={{ transform: ... }}>`).
+
 ## Daily Standup
 
 Same time every day. 2 minutes per person: what's done, what's blocked, what's next.
