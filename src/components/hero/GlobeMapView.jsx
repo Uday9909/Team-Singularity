@@ -17,6 +17,16 @@ function easeOutCubic(t) {
 function lerp(a, b, t) {
   return a + (b - a) * t
 }
+function getAngularDistance(lon1, lat1, lon2, lat2) {
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLon = (lon2 - lon1) * Math.PI / 180
+  const rLat1 = lat1 * Math.PI / 180
+  const rLat2 = lat2 * Math.PI / 180
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(rLat1) * Math.cos(rLat2) * Math.sin(dLon/2) * Math.sin(dLon/2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+  return c * 180 / Math.PI
+}
 
 /**
  * Unified globe → map component.
@@ -180,7 +190,7 @@ export function GlobeMapView({ scrollProgress = 0, onVesselSelect, selectedVesse
         // ── Add Spill Markers ──────────────────────────────────────────────
         SPILL_LOCATIONS.forEach((spill) => {
           const wrapper = document.createElement('div')
-          wrapper.style.cssText = 'display:flex;flex-direction:column;align-items:center;cursor:crosshair;pointer-events:auto;'
+          wrapper.style.cssText = 'display:flex;flex-direction:column;align-items:center;cursor:crosshair;pointer-events:auto;padding:10px;margin:-10px;'
           
           const dot = document.createElement('div')
           // Add pulse glow styling
@@ -208,14 +218,23 @@ export function GlobeMapView({ scrollProgress = 0, onVesselSelect, selectedVesse
           
           wrapper.append(dot, lbl)
           
+          wrapper.__lbl = lbl
+          wrapper.__spill = spill
+          wrapper.__isSafe = true
+          wrapper.__isHovered = false
+          
           // Interactions
           wrapper.onmouseenter = () => {
+            if (!wrapper.__isSafe) return
+            wrapper.__isHovered = true
             hoverInteractingRef.current = true
             onSpillHoverRef.current?.(spill)
             dot.style.transform = 'scale(1.5)'
             dot.style.boxShadow = '0 0 30px #FFB000, 0 0 60px #FFB000'
           }
           wrapper.onmouseleave = () => {
+            if (!wrapper.__isHovered) return
+            wrapper.__isHovered = false
             hoverInteractingRef.current = false
             onSpillHoverRef.current?.(null)
             dot.style.transform = 'scale(1)'
@@ -223,6 +242,7 @@ export function GlobeMapView({ scrollProgress = 0, onVesselSelect, selectedVesse
           }
           wrapper.onclick = (e) => {
             e.stopPropagation()
+            if (!wrapper.__isSafe) return
             onSpillSelectRef.current?.(spill)
           }
 
@@ -260,6 +280,42 @@ export function GlobeMapView({ scrollProgress = 0, onVesselSelect, selectedVesse
         map.on('dragend', onInteractEnd)
         map.on('mouseup', onInteractEnd)
         map.on('touchend', onInteractEnd)
+
+        // ── Edge fade/suppress logic ───────────────────────────────────────
+        map.on('render', () => {
+          const center = map.getCenter()
+          const safeRadius = 65 // degrees (start fading)
+          const edgeRadius = 78 // degrees (completely faded, not interactable)
+
+          Object.values(spillMarkersRef.current).forEach(marker => {
+            const wrapper = marker.getElement()
+            const spill = wrapper.__spill
+            if (!spill) return
+            
+            const dist = getAngularDistance(center.lng, center.lat, spill.lon, spill.lat)
+            
+            // smoothstep from safeRadius to edgeRadius
+            let t = (dist - safeRadius) / (edgeRadius - safeRadius)
+            t = Math.max(0, Math.min(1, t))
+            const opacity = 1 - (t * t * (3 - 2 * t))
+
+            if (wrapper.__lbl) {
+              wrapper.__lbl.style.opacity = opacity.toFixed(3)
+            }
+            
+            const isSafe = dist <= edgeRadius
+            if (isSafe !== wrapper.__isSafe) {
+              wrapper.__isSafe = isSafe
+              wrapper.style.pointerEvents = isSafe ? 'auto' : 'none'
+              
+              if (!isSafe && wrapper.__isHovered) {
+                wrapper.onmouseleave()
+              }
+            }
+          })
+        })
+
+
 
         // ── Spill polygon (visible only when zoomed in) ──────────────────
         map.addSource('spill-poly', { type: 'geojson', data: SPILL_GEOJSON })
