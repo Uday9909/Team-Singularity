@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useMemo, createContext, useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { TopBar } from '../components/layout/TopBar';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useScrollStages } from '../hooks/useScrollStages';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -927,6 +927,11 @@ const ReportPanel3D = () => {
       opacity = ease;
       rise = ease;
     }
+    // Safety clamp: if progress is past halfway, ensure fully risen
+    if (p >= 0.5) {
+      rise = 1;
+      opacity = 1;
+    }
     
     const isVisible = opacity > 0.01;
     panelRef.current.visible = isVisible;
@@ -1216,6 +1221,13 @@ const ScanRevealLabels = ({ stageProgress, type }) => {
 // DOM: HUD text block overlay (TOP-LEFT, below topbar)
 // ═══════════════════════════════════════════════════════════════════════════════
 
+const STAGE5_STATS = [
+  { label: 'IOU SCORE', value: '0.847' },
+  { label: 'VESSELS SCANNED', value: '5' },
+  { label: 'CORRELATION LATENCY', value: '2.3s' },
+  { label: 'MATCHED VESSEL', value: 'OLYMPUS TITAN (98%)', highlight: true },
+];
+
 const StageHUD = ({ stageProgress }) => {
   let activeStage = 0;
   for (let i = 0; i < 5; i++) {
@@ -1236,6 +1248,12 @@ const StageHUD = ({ stageProgress }) => {
   } else {
     textOpacity = 1;
     textY = 0;
+  }
+
+  // Stage 5 stats fade in slightly after the HUD text
+  let statsOpacity = 0;
+  if (activeStage === 4 && p > 0.3) {
+    statsOpacity = easeInOutCubic(Math.min((p - 0.3) / 0.3, 1));
   }
 
   return (
@@ -1285,121 +1303,50 @@ const StageHUD = ({ stageProgress }) => {
       >
         {stage.description}
       </p>
-    </div>
-  );
-};
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// DOM: Stage 5 Report Overlay (aligned with 3D panel)
-// ═══════════════════════════════════════════════════════════════════════════════
-
-const StatRow = ({ label, value, highlight }) => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-    paddingBottom: '12px',
-    borderBottom: '1px solid rgba(57,255,136,0.15)',
-    width: '100%'
-  }}>
-    <span style={{ opacity: 0.6, fontSize: '0.8rem' }}>{label}</span>
-    <span style={{ 
-      color: highlight ? '#FFD700' : '#fff', 
-      textShadow: highlight ? '0 0 10px rgba(255,215,0,0.5)' : 'none',
-      fontWeight: highlight ? 'bold' : 'normal',
-      fontSize: '0.9rem',
-      textAlign: 'right'
-    }}>{value}</span>
-  </div>
-);
-
-const Stage5ReportOverlay = ({ stageProgress }) => {
-  const p = stageProgress[4] || 0;
-  
-  // Fades in slightly after the 3D panel rises
-  let opacity = 0;
-  if (p > 0.3) {
-    opacity = easeInOutCubic(Math.min((p - 0.3) / 0.3, 1));
-  }
-
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 20,
-        opacity,
-        pointerEvents: opacity > 0.5 ? 'auto' : 'none',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          color: 'var(--bone)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '16px',
-          textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-          background: 'rgba(5, 8, 5, 0.65)',
-          padding: 'clamp(20px, 5vw, 40px)',
-          borderRadius: '2px',
-          backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(57, 255, 136, 0.3)',
-          boxShadow: '0 0 40px rgba(57,255,136,0.05) inset, 0 0 20px rgba(0,0,0,0.8)',
-          width: '90%',
-          maxWidth: '420px',
-          transform: `translateY(${5 - opacity * 5}px)`,
-        }}
-      >
-        <div style={{ color: '#39FF88', marginBottom: '8px', fontSize: '1.2rem', textAlign: 'center', fontWeight: 'bold', letterSpacing: '0.15em' }}>
-          FINAL REPORT READOUT
-        </div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
-          <StatRow label="IOU SCORE" value="0.847" />
-          <StatRow label="VESSELS SCANNED" value="5" />
-          <StatRow label="CORRELATION LATENCY" value="2.3s" />
-          <StatRow label="MATCHED VESSEL" value="OLYMPUS TITAN (98%)" highlight />
-        </div>
-        
-        <a
-          href="/"
+      {/* Stage 5 inline stat readout */}
+      {activeStage === 4 && statsOpacity > 0.01 && (
+        <div
           style={{
-            marginTop: '32px',
-            padding: '16px 32px',
-            border: '2px solid #39FF88',
-            color: '#050805',
-            textDecoration: 'none',
-            textAlign: 'center',
-            background: '#39FF88',
-            transition: 'all 0.2s ease',
-            fontWeight: 800,
-            textTransform: 'uppercase',
-            letterSpacing: '0.15em',
-            boxShadow: '0 0 20px rgba(57,255,136,0.3)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#ffffff';
-            e.currentTarget.style.borderColor = '#ffffff';
-            e.currentTarget.style.boxShadow = '0 0 30px rgba(255,255,255,0.6)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = '#39FF88';
-            e.currentTarget.style.borderColor = '#39FF88';
-            e.currentTarget.style.boxShadow = '0 0 20px rgba(57,255,136,0.3)';
+            marginTop: '20px',
+            opacity: statsOpacity,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            borderTop: '1px solid rgba(57,255,136,0.15)',
+            paddingTop: '16px',
           }}
         >
-          Launch Dashboard →
-        </a>
-      </div>
+          {STAGE5_STATS.map((stat) => (
+            <div
+              key={stat.label}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem',
+                letterSpacing: '0.08em',
+              }}
+            >
+              <span style={{ color: 'var(--bone)', opacity: 0.5 }}>{stat.label}</span>
+              <span
+                style={{
+                  color: stat.highlight ? '#FFD700' : 'var(--phosphor)',
+                  fontWeight: stat.highlight ? 'bold' : 'normal',
+                  textShadow: stat.highlight ? '0 0 10px rgba(255,215,0,0.4)' : 'none',
+                }}
+              >
+                {stat.value}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
+
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1503,52 +1450,13 @@ const ScanSweepOverlay = ({ stageProgress }) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export default function Architecture() {
-  const navigate = useNavigate();
-  const stageProgress = useRef([0, 0, 0, 0, 0]);
-  const [hudProgress, setHudProgress] = useState([0, 0, 0, 0, 0]);
-  const triggersRef = useRef([]);
+  const { stageProgress, hudProgress } = useScrollStages(5, 'arch-stage');
 
   let activeStage = 0;
   for (let i = 0; i < 5; i++) {
     if (hudProgress[i] > 0.01) activeStage = i;
   }
   const activeFeeds = STAGES[activeStage].feeds;
-
-  const throttleRef = useRef(0);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const triggers = [];
-      for (let i = 0; i < 5; i++) {
-        const el = document.getElementById(`arch-stage-${i}`);
-        if (!el) continue;
-
-        const st = ScrollTrigger.create({
-          trigger: el,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 0.5,
-          onUpdate: (self) => {
-            stageProgress.current[i] = self.progress;
-
-            const now = performance.now();
-            if (now - throttleRef.current > 33) {
-              throttleRef.current = now;
-              setHudProgress([...stageProgress.current]);
-            }
-          },
-        });
-        triggers.push(st);
-      }
-      triggersRef.current = triggers;
-    }, 150);
-
-    return () => {
-      clearTimeout(timer);
-      triggersRef.current.forEach((st) => st.kill());
-      triggersRef.current = [];
-    };
-  }, []);
 
   return (
     <div style={{ background: '#050805', minHeight: '100vh', color: '#e0e5df' }}>
@@ -1601,9 +1509,6 @@ export default function Architecture() {
         <ArchFooterTicker activeFeeds={activeFeeds} />
       </div>
 
-      {/* ── Stage 5: New HUD Report Overlay ── */}
-      <Stage5ReportOverlay stageProgress={hudProgress} />
-
       {/* ── Scroll trigger sections ── */}
       <div style={{ position: 'relative', zIndex: 1 }}>
         {STAGES.map((_, i) => (
@@ -1613,38 +1518,7 @@ export default function Architecture() {
             style={{ height: '100vh', position: 'relative' }}
           />
         ))}
-        <div style={{ height: '20vh' }} />
-        
-        <div style={{ padding: '80px 0', display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 10 }}>
-          <button 
-            onClick={() => navigate('/landing')}
-            style={{
-              padding: '16px 40px',
-              background: 'rgba(57,255,106,0.1)',
-              border: '1px solid var(--phosphor)',
-              color: 'var(--phosphor)',
-              fontFamily: 'monospace',
-              fontSize: '1rem',
-              letterSpacing: '0.1em',
-              cursor: 'pointer',
-              borderRadius: '8px',
-              boxShadow: '0 0 20px rgba(57,255,106,0.2)',
-              transition: 'all 0.3s ease',
-              pointerEvents: 'auto'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(57,255,106,0.2)';
-              e.target.style.boxShadow = '0 0 30px rgba(57,255,106,0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(57,255,106,0.1)';
-              e.target.style.boxShadow = '0 0 20px rgba(57,255,106,0.2)';
-            }}
-          >
-            [ PROCEED TO LIVE DASHBOARD ]
-          </button>
-        </div>
-        <div style={{ height: '20vh' }} />
+        <div style={{ height: '50vh' }} />
       </div>
     </div>
   );

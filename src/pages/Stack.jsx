@@ -627,7 +627,7 @@ export default function Stack() {
         ))}
       </div>
       
-      <div style={{ height: '30vh' }} />
+      <div style={{ height: '50vh' }} />
     </div>
   );
 }
