@@ -5,6 +5,7 @@ import './index.css'
 import Dashboard from './App.jsx'
 import Architecture from './pages/Architecture.jsx'
 import Stack from './pages/Stack.jsx'
+import ModelLab from './pages/ModelLab.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -13,6 +14,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/" element={<Architecture />} />
         <Route path="/landing" element={<Dashboard />} />
         <Route path="/stack" element={<Stack />} />
+        <Route path="/model" element={<ModelLab />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
