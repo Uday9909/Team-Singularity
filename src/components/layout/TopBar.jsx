@@ -13,6 +13,7 @@ export function TopBar() {
     { name: 'Architecture', path: '/' },
     { name: 'Dashboard', path: '/landing' },
     { name: 'Stack', path: '/stack' },
+    { name: 'Model Lab', path: '/model' },
   ]
 
   return (
