@@ -21,6 +21,10 @@ export default function App() {
 
   const activeSpill = selectedSpill || hoveredSpill
 
+  // While the backtrack plays, the panels step aside so the map is unobstructed —
+  // the pan and the rewind are the content in that window, not the results.
+  const inFlight = scan.id > 0 && !scan.revealed
+
   const handleDetectionComplete = useCallback(() => {
     // Instant, so scrollProgress is already 1 by the time the sequence starts —
     // the spill polygon is minzoom-gated and would otherwise be off-screen.
@@ -197,12 +201,15 @@ export default function App() {
             </div>
 
             {/* ── Three panels row ── */}
-            <div className="flex-1 mt-4">
+            <div
+              className="flex-1 mt-4"
+              style={{ opacity: inFlight ? 0 : 1, transition: 'opacity 450ms ease' }}
+            >
               <div
                 className="grid grid-cols-1 xl:grid-cols-3 gap-6"
                 style={{
                   width: '100%',
-                  pointerEvents: 'auto',
+                  pointerEvents: inFlight ? 'none' : 'auto',
                 }}
               >
                 <DetectPanel onDetectionComplete={handleDetectionComplete} />
