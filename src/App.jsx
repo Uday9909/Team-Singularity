@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { TopBar } from './components/layout/TopBar'
 import { Footer } from './components/layout/Footer'
 import { HeroSection } from './components/hero/HeroSection'
@@ -15,9 +15,22 @@ export default function App() {
   const [uiReady, setUiReady] = useState(false)
   const [hoveredSpill, setHoveredSpill] = useState(null)
   const [selectedSpill, setSelectedSpill] = useState(null)
-  const [hasDetectionData, setHasDetectionData] = useState(false)
+  // `id` re-runs the backtrack sequence on every drop; `revealed` flips only
+  // when GlobeMapView reports the animation has finished.
+  const [scan, setScan] = useState({ id: 0, revealed: false })
 
   const activeSpill = selectedSpill || hoveredSpill
+
+  const handleDetectionComplete = useCallback(() => {
+    // Instant, so scrollProgress is already 1 by the time the sequence starts —
+    // the spill polygon is minzoom-gated and would otherwise be off-screen.
+    document.getElementById('dashboard-section')?.scrollIntoView({ behavior: 'instant', block: 'start' })
+    setScan(s => ({ id: s.id + 1, revealed: false }))
+  }, [])
+
+  const handleRevealComplete = useCallback(() => {
+    setScan(s => ({ ...s, revealed: true }))
+  }, [])
 
   // ── Delay UI fade-in to allow map to construct (1 second) ──────────────
   useEffect(() => {
@@ -49,7 +62,9 @@ export default function App() {
         selectedVesselId={selectedVesselId}
         onSpillHover={setHoveredSpill}
         onSpillSelect={setSelectedSpill}
-        hasDetectionData={hasDetectionData}
+        scanId={scan.id}
+        revealed={scan.revealed}
+        onRevealComplete={handleRevealComplete}
       />
 
       {/* ── UI Layer: Fades in after map finishes loading ──── */}
@@ -190,15 +205,15 @@ export default function App() {
                   pointerEvents: 'auto',
                 }}
               >
-                <DetectPanel onDetectionComplete={() => setHasDetectionData(true)} />
+                <DetectPanel onDetectionComplete={handleDetectionComplete} />
                 <CorrelatePanel
                   selectedVesselId={selectedVesselId}
                   onVesselSelect={setSelectedVesselId}
-                  hasDetectionData={hasDetectionData}
+                  revealed={scan.revealed}
                 />
                 <ReportPanel
                   selectedVesselId={selectedVesselId}
-                  hasDetectionData={hasDetectionData}
+                  revealed={scan.revealed}
                 />
               </div>
             </div>

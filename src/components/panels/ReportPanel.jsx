@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { INITIAL_VESSELS } from '../../data/demo'
 import { jsPDF } from 'jspdf'
 
-export function ReportPanel({ selectedVesselId, hasDetectionData }) {
+export function ReportPanel({ selectedVesselId, revealed }) {
   const [generating, setGenerating] = useState(false)
   const [lastReport, setLastReport] = useState(null)
   const [msg, setMsg] = useState(null)
@@ -92,7 +92,7 @@ export function ReportPanel({ selectedVesselId, hasDetectionData }) {
 
       <div className="section-divider" />
 
-      {!hasDetectionData ? (
+      {!revealed ? (
         <div className="flex flex-col items-center justify-center text-center gap-3 h-full" style={{ padding: '40px 20px' }}>
           <span style={{ fontSize: '24px', opacity: 0.2 }}>📄</span>
           <span className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: 0.4, lineHeight: 1.6 }}>

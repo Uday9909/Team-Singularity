@@ -7,29 +7,41 @@ export function DetectPanel({ onDetectionComplete }) {
   const [done, setDone] = useState(false)
   const scanLineRef = useRef(null)
   const fileInputRef = useRef(null)
+  const runIdRef = useRef(0)
+  const debounceRef = useRef(null)
+  const animRef = useRef(null)
 
-  const runScan = useCallback(async () => {
+  const runScan = useCallback(async (run) => {
     setScanning(true)
     setDone(false)
     const el = scanLineRef.current
-    if (el) { el.style.opacity = '1'; el.style.top = '0%' }
 
     const { animate } = await import('animejs')
+    if (runIdRef.current !== run) return
+
     if (el) {
-      animate(el, { top: '100%', duration: 1800, ease: 'linear' })
+      el.style.opacity = '1'
+      el.style.top = '0%'
+      animRef.current = animate(el, { top: '100%', duration: 1800, ease: 'linear' })
     }
     await new Promise(r => setTimeout(r, 2000))
+    if (runIdRef.current !== run) return
     if (el) el.style.opacity = '0'
     setScanning(false)
     setDone(true)
-    if (onDetectionComplete) onDetectionComplete()
+    onDetectionComplete?.()
   }, [onDetectionComplete])
 
   const handleFile = useCallback((file) => {
     if (!file?.type.match(/image\//)) return
+    // A re-drop mid-scan replaces the in-flight run rather than racing it —
+    // this gets demonstrated live, so double-drops are the normal case.
+    const run = ++runIdRef.current
+    clearTimeout(debounceRef.current)
+    animRef.current?.cancel?.()
     setImage(URL.createObjectURL(file))
     setDone(false)
-    setTimeout(runScan, 300)
+    debounceRef.current = setTimeout(() => runScan(run), 300)
   }, [runScan])
 
   const onDrop = (e) => { e.preventDefault(); setIsDragging(false); handleFile(e.dataTransfer.files[0]) }

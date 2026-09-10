@@ -74,7 +74,7 @@ function VesselCard({ vessel, rank, isSelected, onClick, scoreRef }) {
   )
 }
 
-export function CorrelatePanel({ selectedVesselId, onVesselSelect, hasDetectionData }) {
+export function CorrelatePanel({ selectedVesselId, onVesselSelect, revealed }) {
   const [selected, setSelected] = useState(INITIAL_VESSELS[0].id)
   const scoreRef = useRef(null)
   const prevScore = useRef(null)
@@ -110,7 +110,7 @@ export function CorrelatePanel({ selectedVesselId, onVesselSelect, hasDetectionD
 
       <div className="section-divider" />
 
-      {!hasDetectionData ? (
+      {!revealed ? (
         <div className="flex flex-col items-center justify-center text-center gap-3 h-full" style={{ padding: '40px 20px' }}>
           <span style={{ fontSize: '24px', opacity: 0.2 }}>⚓</span>
           <span className="font-mono text-xs" style={{ color: 'var(--bone)', opacity: 0.4, lineHeight: 1.6 }}>
