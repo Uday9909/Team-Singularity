@@ -365,6 +365,41 @@ body {
   100% { transform: scale(2.2); opacity: 0; }
 }
 
+/* Backtrack origin marker — offset so the element box centre sits on the lng/lat
+   point, letting marker-ring scale about the point itself. */
+.origin-ping {
+  position: absolute;
+  left: -14px;
+  top: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #FF2D6B;
+  animation: marker-ring 1.4s ease-out infinite;
+}
+.origin-core {
+  position: absolute;
+  left: -5px;
+  top: -5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #FF2D6B;
+  box-shadow: 0 0 16px #FF2D6B, 0 0 32px #FF2D6B;
+}
+.origin-label {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: #FF2D6B;
+  white-space: nowrap;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.95);
+}
+
 /* Three.js globe container */
 .three-globe-container {
   position: absolute;

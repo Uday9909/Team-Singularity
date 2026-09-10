@@ -144,6 +144,15 @@ export const MAP_CENTER = [-89.1, 27.5]
 export const MAP_ZOOM_START = 1
 export const MAP_ZOOM_END = 5.5
 
+// Backtrack target: where V001's discharge originated. Placed so that
+// SPILL_ORIGIN -> V001 is 12.3 nm on a bearing of 142deg, consistent with
+// INITIAL_VESSELS[0].distance and .heading.
+export const SPILL_ORIGIN = { lat: 27.61, lon: -89.26 }
+
+// Camera punches in during the backtrack collapse — at MAP_ZOOM_END the spill
+// ring is only ~24px wide, too small for the rewind to read.
+export const CINEMATIC_ZOOM = 8.5
+
 // Globe hero: camera starts over the Pacific so the Americas/Atlantic 
 // are pushed off-axis to the right edge, fitting the asymmetric HUD.
 export const GLOBE_START_CENTER = [-105, 25]
